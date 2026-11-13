@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ocj_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ocj_db
+      POSTGRES_USER: ocj_admin
+      POSTGRES_PASSWORD: ocj_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - ocj_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ocj_admin -d ocj_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ocj_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://ocj_admin:ocj_password_2026@postgres:5432/ocj_db?schema=public"
+      JWT_SECRET: "ocj_secret_de_cambio_en_produccion_2026"
+      JWT_EXPIRES_IN: "7d"
+      PORT: 3001
+      NODE_ENV: development
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ocj_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:3001
+    ports:
+      - "80:80"
+
+volumes:
+  ocj_postgres_data:
