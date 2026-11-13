@@ -1,0 +1,36 @@
+{
+  "name": "OCJ - Sistema de Gestión",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "portsAttributes": {
+    "80": {
+      "label": "OCJ Frontend",
+      "onAutoForward": "openPreview"
+    },
+    "3001": {
+      "label": "OCJ Backend API",
+      "onAutoForward": "openPreview"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    }
+  },
+  "forwardPorts": [80, 3001, 5432],
+  "postCreateCommand": "chmod +x ../INSTALAR-EJECUTAR.bat",
+  "remoteUser": "vscode"
+}

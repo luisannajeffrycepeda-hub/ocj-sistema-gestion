@@ -1,7 +1,4 @@
 node_modules/
+dist/
 .env
 *.log
-.DS_Thumbs
-dist/
-uploads/
-*.local
